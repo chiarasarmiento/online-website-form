@@ -1,7 +1,7 @@
 <?php
 
 
-	require '../../../../wp-config.php';
+	require '../../../../wp-systcon/wp-load.php';
 	include_once '../../../../onlineforms/detect/user_agents.php';
 
 

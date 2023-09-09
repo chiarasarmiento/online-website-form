@@ -522,7 +522,7 @@ class FormsClass {
 			if(isset($_SESSION[$fldname])) $value = $_SESSION[$fldname];
 			if(isset($_POST[$fldname])) $value = $_POST[$fldname];
 
-			$inputfield = '<div class="field_holder animated_box"> <i id="icon" class="fas">'.$icontxt.'</i> <input type="text" name="'.$fldname.'" class="'.$class.' fldicon" value="'.$value.'" id="'.$id.'" placeholder="'.trim($placeholder).'" '.$attrib.'><span class = "animated_class"></span></div>';
+			$inputfield = '<div class="field_holder animated_box"> <span id="icon_num" class="">'.$icontxt.'</span> <input type="text" name="'.$fldname.'" class="'.$class.' fldicon" value="'.$value.'" id="'.$id.'" placeholder="'.trim($placeholder).'" '.$attrib.'><span class = "animated_class"></span></div>';
 
 			 echo $inputfield;
 	}
@@ -562,11 +562,17 @@ class FormsClass {
 	}
 
 	function phoneInput($name='',$class='',$id='',$attrib='') {
+		
 		$fldname = str_replace(' ', '_', $name);
 		$value = '';
 		$input = '';
+		$value = '';
+		if(isset($_SESSION[$fldname])) $value = $_SESSION[$fldname];
+		if(isset($_POST[$fldname])) $value = $_POST[$fldname];
+		//else if(!isset($_POST[$fldname])) $value = "_";
+ 
 		$trigger = '<div class="phone-trigger"><i class="us flag" data-flag="true"></i><i class="fas fa-caret-down"></i></div>';
-		$input .= '<div class="field_holder animated_box">'.$trigger.'<input type="text" name="'.$fldname.'" class="'.$class.' cphone" id="'.$id.'" placeholder="+1 (number)"><span class = "animated_class"></span></div>';
+		$input .= '<div class="field_holder animated_box">'.$trigger.'<input type="text" name="'.$fldname.'" class="'.$class.' cphone"  value="'.$value.'" id="'.$id.'" placeholder="+1 (number)"><span class = "animated_class"></span></div>';
 		echo $input;
 	}
 

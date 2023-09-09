@@ -1,10 +1,9 @@
 <?php
 @session_start();
-
 require_once 'FormsClass.php';
 $input = new FormsClass();
 
-$formname = 'Employment Form';
+$formname = 'Careers Form';
 $prompt_message = '<span class="required-info">* Required Information</span>';
 require_once 'config.php';
 if ($_POST){
@@ -17,12 +16,17 @@ if ($_POST){
 	$server_output = curl_exec($ch);
 	$result_recaptcha = json_decode($server_output);
 	curl_close ($ch);
-
-	if( empty($_POST['Full_Name']) 
+	
+	if( empty($_POST['Name']) ||
+		empty($_POST['Address']) ||
+		empty($_POST['City']) ||
+		empty($_POST['_Zip_Code']) ||
+		empty($_POST['Email_Address'])
 		) {
 
+
 	$asterisk = '<span style="color:#FF0000; font-weight:bold;">*&nbsp;</span>';
-	$prompt_message = '<div id="error-msg"><div class="message"><span>Failed to send email. Please try again.</span><br/><p class="error-close">x</p></div></div>';
+	$prompt_message = '<div id="error-msg"><div class="message"><span>Required Fields are empty</span><br/><p class="error-close">x</p></div></div>';
 	}
 	else if(!preg_match("/^[_\.0-9a-zA-Z-]+@([0-9a-zA-Z][0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}$/i",stripslashes(trim($_POST['Email_Address']))))
 		{ $prompt_message = '<div id="recaptcha-error"><div class="message"><span>Please enter a valid email address</span><br/><p class="rclose">x</p></div></div>';}
@@ -31,57 +35,62 @@ if ($_POST){
 	}
 	else{
 
+
 		if (MAIL_TYPE == 1) {
 			$formdisclaimer =  '<div style="position: relative; top: 10px; background: #eef5f8; padding: 15px 20px; border-radius: 5px; width: 660px; margin: 0 auto; text-align: center; font-family: Poppins,sans-serif; border: 1px solid #f9f9f9;  color: #6a6a6a !important;">  
 					<span style="border-radius: 50%; height: 19px; display: inline-block; color: #f49d2c; font-size: 15px;   text-align: center;"></span> Please do not reply to this email. This is only a notification from your website online forms. 
 					<br>To contact the person who filled out your online form, kindly use the email which is inside the form below.</div>';
 		} else $formdisclaimer = '';
-
+		
 		$body =  '
 		
-				<div class="form_table" style="width:700px; height:auto; font-size:12px; color:#6a6a6a; letter-spacing:1px; margin: 0 auto; font-family: Poppins,sans-serif;">' . $formdisclaimer . '
-				<div class="container" style="background: #fff; margin-top: 30px; font-family: Poppins,sans-serif; color:#6a6a6a; box-shadow: 10px 10px 31px -7px rgba(38,38,38,0.11); -webkit-box-shadow: 10px 10px 31px -7px rgba(38,38,38,0.11); -moz-box-shadow: 10px 10px 31px -7px rgba(38,38,38,0.11);  border-radius: 5px 5px 5px 5px; border: 1px solid #eee;">
-					<div class="header" style="background: #a3c7d6; padding: 30px; border-radius: 5px 5px 0px 0px; ">
-						<div align="left" style="font-size:22px; font-family: Poppins,sans-serif; color:#fff; font-weight: 900;">' . $formname . '</div>
-						<div align="left" style=" color: #11465E;  font-size:19px; font-family: Poppins,sans-serif;  font-style: italic; margin-top: 6px; font-weight: 900;">' . COMP_NAME . '</div>
-					</div>
-				<div style="padding: 13px 30px 25px 30px;">
-				<table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="font-family: Poppins,sans-serif;font-size:14px; padding-bottom: 20px;"> 
-	
-					';
-					foreach ($_POST as $key => $value) {
-						if ($key == 'secode') continue;
-						elseif ($key == 'submit') continue;
-						elseif ($key == 'g-recaptcha-response') continue;
-			
-						if (!empty($value)) {
-							$key2 = str_replace('_', ' ', $key);
-							if ($value == ':') {
-								$body .= ' <tr margin-bottom="10px"> <td colspan="5" height="28" class="OFDPHeading" width="100%" style=" background:#F0F0F0; margin-bottom:5px;"><b style="padding-left: 4px;">' . $key2 . '</b></td></tr>';
-							} else {
-								$body .= '<tr><td class="Values1"colspan="2" height="28" align="left" width="45%" padding="100" style="line-height: normal; padding-left: 4px;text-justify: inter-word; word-wrap: anywhere; padding-right: 28px;">
-								<span style="position:relative !important;"><b>' . $key2 . '</b></span >:</td> <td class="Values2"colspan="2" height="28" align="left" width="45%" padding="10" style="line-height: normal; word-wrap: anywhere; "><span style="margin-top: 7px; position:relative;margin-left: 7px; border-collapse: collapse; display: inline-block;margin-bottom: 5px;margin-right: 7px;">' . htmlspecialchars(trim($value), ENT_QUOTES) . '</span> </td></tr>';
-						}
-						}
-					}
-					$body .= '
-					</table>
-					</div>
-					</div>';
+		<div class="form_table" style="width:700px; height:auto; font-size:12px; color:#6a6a6a; letter-spacing:1px; margin: 0 auto; font-family: Poppins,sans-serif;">' . $formdisclaimer . '
+		<div class="container" style="background: #fff; margin-top: 30px; font-family: Poppins,sans-serif; color:#6a6a6a; box-shadow: 10px 10px 31px -7px rgba(38,38,38,0.11); -webkit-box-shadow: 10px 10px 31px -7px rgba(38,38,38,0.11); -moz-box-shadow: 10px 10px 31px -7px rgba(38,38,38,0.11);  border-radius: 5px 5px 5px 5px; border: 1px solid #eee;">
+			<div class="header" style="background: #a3c7d6; padding: 30px; border-radius: 5px 5px 0px 0px; ">
+				<div align="left" style="font-size:22px; font-family: Poppins,sans-serif; color:#fff; font-weight: 900;">' . $formname . '</div>
+				<div align="left" style=" color: #11465E;  font-size:19px; font-family: Poppins,sans-serif;  font-style: italic; margin-top: 6px; font-weight: 900;">' . COMP_NAME . '</div>
+			</div>
+		<div style="padding: 13px 30px 25px 30px;">
+		<table border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="font-family: Poppins,sans-serif;font-size:14px; padding-bottom: 20px;"> 
 
-			// require_once 'swiftmailer/mail.php';
-			// save data form on database
-		include 'savedb.php';
+					';
+				foreach ($_POST as $key => $value) {
+					if ($key == 'secode') continue;
+					elseif ($key == 'submit') continue;
+					elseif ($key == 'g-recaptcha-response') continue;
+		
+					if (!empty($value)) {
+						$key2 = str_replace('_', ' ', $key);
+						if ($value == ':') {
+							$body .= ' <tr margin-bottom="10px"> <td colspan="5" height="28" class="OFDPHeading" width="100%" style=" background:#F0F0F0; margin-bottom:5px;"><b style="padding-left: 4px;">' . $key2 . '</b></td></tr>';
+						} else {
+							$body .= '<tr><td class="Values1"colspan="2" height="28" align="left" width="45%" padding="100" style="line-height: normal; padding-left: 4px;text-justify: inter-word; word-wrap: anywhere; padding-right: 28px;">
+							<span style="position:relative !important;"><b>' . $key2 . '</b></span >:</td> <td class="Values2"colspan="2" height="28" align="left" width="45%" padding="10" style="line-height: normal; word-wrap: anywhere; "><span style="margin-top: 7px; position:relative;margin-left: 7px; border-collapse: collapse; display: inline-block;margin-bottom: 5px;margin-right: 7px;">' . htmlspecialchars(trim($value), ENT_QUOTES) . '</span> </td></tr>';
+					}
+					}
+				}
+				$body .= '
+				</table>
+				</div>
+				</div>';
+			
+			//echo $body; exit;
+
+		 // for email notification
+		require_once 'config.php';
 		include 'send_email_curl.php';
 
 		// save data form on database
-		$subject2 = $formname ;
-		$attachments = array();
+		include 'savedb.php';
 
+
+		// save data form on database
+		$subject = $formname ;
+		$attachments = array();
 		// when form has attachments, uncomment code below
 		if(!empty($_FILES['attachment']['name'])){
 			$attachmentsdir = ABSPATH.'onlineforms/attachments/';
-			$validextensions = array('pdf', 'doc', 'docx', 'txt', 'jpg', 'jpeg', 'png', 'zip', 'rar'); // include file type here
+			$validextensions = array('pdf', 'doc', 'docx'); // include file type here
 			for($i = 0 ; $i < count($_FILES['attachment']['name']) ; $i++ ){
 
 				$checkfile =  $attachmentsdir.$_FILES['attachment']['name'][$i];
@@ -102,12 +111,9 @@ if ($_POST){
 		}
 
 	 	//name of sender
-		$name = $_POST['Full_Name'];
-		$result = insertDB($name,$subject2,$body,$attachments);
-		
+		$name = $_POST['Name'];
+		$result = insertDB($name,$subject,$body,$attachments);
 
-		$subject = COMP_NAME . " [" . $formname . "]";	
-		
 		$parameter = array(
 			'body' => $body,
 			'from' => $from_email,
@@ -123,13 +129,14 @@ if ($_POST){
 
 		$prompt_message = send_email($parameter, $success_msg, $error_msg);
 		unset($_POST);
-
 	}
 
 }
 /*************declaration starts here************/
 $state = array('Please select state.','Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District Of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Puerto Rico','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virgin Islands','Virginia','Washington','West Virginia','Wisconsin','Wyoming');
 $country = array('Please select country.','Afghanistan','Albania','Algeria','Andorra','Angola','Anguilla','Antigua & Barbuda','Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bermuda','Bhutan','Bolivia','Bosnia & Herzegovina','Botswana','Brazil','Brunei Darussalam','Bulgaria','Burkina Faso','Myanmar/Burma','Burundi','Cambodia','Cameroon','Canada','Cape Verde','Cayman Islands','Central African Republic','Chad','Chile','China','Colombia','Comoros','Congo','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic','Democratic Republic of the Congo','Denmark','Djibouti','Dominica','Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Ethiopia','Fiji','Finland','France','French Guiana','Gabon','Gambia','Georgia','Germany','Ghana','Great Britain','Greece','Grenada','Guadeloupe','Guatemala','Guinea','Guinea-Bissau','Guyana','Haiti','Honduras','Hungary','Iceland','India','Indonesia','Iran','Iraq','Israel and the Occupied Territories','Italy','Ivory Coast (Cote d\'Ivoire)','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kosovo','Kuwait','Kyrgyz Republic (Kyrgyzstan)','Laos','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Republic of Macedonia','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Martinique','Mauritania','Mauritius','Mayotte','Mexico','Moldova, Republic of','Monaco','Mongolia','Montenegro','Montserrat','Morocco','Mozambique','Namibia','Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria','Korea, Democratic Republic of (North Korea)','Norway','Oman','Pacific Islands','Pakistan','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Poland','Portugal','Puerto Rico','Qatar','Reunion','Romania','Russian Federation','Rwanda','Saint Kitts and Nevis','Saint Lucia','Saint Vincent\'s & Grenadines','Samoa','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovak Republic (Slovakia)','Slovenia','Solomon Islands','Somalia','South Africa','Korea, Republic of (South Korea)','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Swaziland','Sweden','Switzerland','Syria','Tajikistan','Tanzania','Thailand','Timor Leste','Togo','Trinidad & Tobago','Tunisia','Turkey','Turkmenistan','Turks & Caicos Islands','Uganda','Ukraine','United Arab Emirates','United States of America (USA)','Uruguay','Uzbekistan','Venezuela','Vietnam','Virgin Islands (UK)','Virgin Islands (US)','Yemen','Zambia','Zimbabwe');
+$preferredToContact = array('- Please Select -','Phone','Fax','Email');
+
 ?>
 <!DOCTYPE html>
 <html class="no-js" lang="en-US">
@@ -138,27 +145,23 @@ $country = array('Please select country.','Afghanistan','Albania','Algeria','And
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<title><?php echo $formname; ?></title>
+
 		<link rel="stylesheet" href="style.min.css?ver23asas">
-			<link rel="stylesheet" href="css/media.min.css?ver24as">
-			<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-			<link rel="stylesheet" type="text/css" href="css/dd.min.css" />
-			<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css">
-			<link rel="stylesheet" href="css/font-awesome.min.css">
-			<link rel="stylesheet" href="css/datepicker.min.css">
-			<link rel="stylesheet" href="css/jquery.datepick.min.css" type="text/css" media="screen" />
-
-			<link rel="stylesheet" href="css/proweaverPhone.css?ver=<?php echo time(); ?>">
-			<link rel="stylesheet" href="css/flag.min.css" type="text/css"/>
-
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css">
+		<link rel="stylesheet" href="css/media.min.css?ver24as">
 		<script src='https://www.google.com/recaptcha/api.js'></script>
+		
+		<link rel="stylesheet" href="css/proweaverPhone.css?ver=<?php echo time(); ?>">
+		<link rel="stylesheet" href="css/flag.min.css" type="text/css"/>
+		
+		<link rel="stylesheet" href="css/proweaverPhone.css?ver=<?php echo time(); ?>">
+		<link rel="stylesheet" href="css/flag.min.css" type="text/css"/>
 		<style>
  
-				.rdio .radio tr td {width: 100%; }
-				.rdio .radio tr td:not(:last-child) { margin-bottom: 5px;}
-				 input[type="text"]:disabled {   font-style: italic; }
-				 @media only screen and (max-width: 960px) {
-				 .rdio .radio tr td {height:unset;}
-				 .rdio td label {padding-right: 30px !important;}
+			 
+				@media only screen and (max-width : 330px) {
+					#error-msg .message {height: 25%;}
 				}
 			</style>
 	</head>
@@ -171,31 +174,44 @@ $country = array('Please select country.','Afghanistan','Albania','Algeria','And
 						<?php if($testform):?><div class="test-mode"><i class="fas fa-info-circle"></i><span>You are in test mode!</span></div><?php endif;?>
 
 						<form id="submitform" name="contact" method="post" enctype="multipart/form-data" action="">
-							<?php echo $prompt_message; ?>
-							
+								<?php echo $prompt_message; ?>
+								
 						 
-							
-									<div class="form_box">
+
+							<div class="form_box">
+								<div class="form_box_col1">
+									<div class="group">
+										<?php
+											$input->label('Name', '*');
+											// @param field name, class, id and attribute
+											$input->fields('Name', 'form_field','Name','placeholder="Enter name here"');
+										?>
+									</div>
+								</div>
+							</div>
+
+							<div class="form_box">
 								<div class="form_box_col2">
 									<div class="group">
 										<?php
-											$input->label('Full Name', '*');
-											// @param field name, class, id and attribute
-											$input->fields('Full_Name', 'form_field','Full_Name','placeholder="Enter full name here"');
-										?>
-									</div>
-									<div class="group">
-										<?php
+											// @param label-name, if required
 											$input->label('Address', '*');
 											// @param field name, class, id and attribute
 											$input->fields('Address', 'form_field','Address','placeholder="Enter address here"');
 										?>
 									</div>
+									<div class="group">
+										<?php
+											// @param label-name, if required
+											$input->label('Email Address', '*');
+											// @param field name, class, id and attribute
+											$input->fields('Email_Address', 'form_field','Email_Address','placeholder="example@domain.com"');
+										?>
+									</div>
 								</div>
 							</div>
-							
-							
-						<div class="form_box">
+
+							<div class="form_box">
 								<div class="form_box_col2" id="country">
 									<div class="group">
 										<?php $input->label('Country',''); ?>
@@ -439,23 +455,43 @@ $country = array('Please select country.','Afghanistan','Albania','Algeria','And
 									</div>
 								</div>
 							</div>
-
-
+							
 
 							<div class="form_box">
-								<div class="form_box_col2">
+								<div class="form_box_col1">
 									<div class="group">
 										<?php
-											$input->label('Email Address','*');
-											// @param field name, class, id and attribute
-											$input->fields('Email_Address', 'form_field','Email_Address','placeholder="example@domain.com"');
-										?>
-									</div>
-									<div class="group">
-										<?php
+											// @param label-name, if required
 											$input->label('Phone Number', '*');
 											// @param field name, class, id and attribute
-											$input->phoneInput('Phone_Number', 'form_field','Phone_Number','placeholder="Enter number here"');
+											$input->phoneInput('Phone_Number', 'form_field','Phone_Number','placeholder="Enter phone number here"');
+										?>
+									</div>
+								</div>
+							</div>
+
+							
+
+							<div class="form_box">
+								<div class="form_box_col1">
+									<div class="group">
+										<?php
+											// @param label-name, if required
+											$input->label('What License Do You Currently Hold?');
+											// @param field name, class, id and attribute
+											$input->radio('License_Currently_Holding',array('HHA','LPN','RN','None'),'','','4');
+										?>
+									</div>
+								</div>
+							</div>
+							<div class="form_box">
+								<div class="form_box_col1">
+									<div class="group">
+										<?php
+											// @param label-name, if required
+											$input->label('Are you over 18?');
+											// @param field name, class, id and attribute
+											$input->radio('Over_18_years_old',array('Yes','No'),'','','2');
 										?>
 									</div>
 								</div>
@@ -466,17 +502,17 @@ $country = array('Please select country.','Afghanistan','Albania','Algeria','And
 									<div class="group">
 										<?php
 											// @param label-name, if required
-											$input->label('Employment Type Desired');
+											$input->label('Do you have a driver\'s license?');
 											// @param field name, class, id and attribute
-											$input->radio('Employment_Type_Desired',array('Full-Time','Part-Time'),'','',2);
+											$input->radio('Have_a_Driver\'s_License',array('Yes','No'),'','','2');
 										?>
 									</div>
 									<div class="group">
 										<?php
 											// @param label-name, if required
-											$input->label('Are you fluent in speaking English?');
+											$input->label('Do you own a car?');
 											// @param field name, class, id and attribute
-											$input->radio('Fluent_In_Speaking_English',array('Yes','No'),'','',2);
+											$input->radio('Owns_a_car',array('Yes','No'),'','','2');
 										?>
 									</div>
 								</div>
@@ -487,69 +523,26 @@ $country = array('Please select country.','Afghanistan','Albania','Algeria','And
 									<div class="group">
 										<?php
 											// @param label-name, if required
-											$input->label('What other languages do you speak / write besides English?');
+											$input->label('What shifts would you prefer?');
 											// @param field name, class, id and attribute
-											$input->textarea('Other_languages_spoken_or_written_besides_english', 'text form_field','Other_languages_spoken_or_written_besides_english','placeholder="Enter other languages here"');
-										?>
-									</div>
-								</div>
-							</div>
-
-
-							<div class="form_box">
-								<div class="form_box_col2">
-									<div class="group">
-										<?php
-											// @param label-name, if required
-											$input->label('Are you CPR Certified?');
-											// @param field name, class, id and attribute
-											$input->radio('CPR Certified',array('Yes','No'),'','',2);
-										?>
-									</div>
-									<div class="group">
-										<?php
-											// @param label-name, if required
-											$input->label('Are you trained with First Aid?');
-											// @param field name, class, id and attribute
-											$input->radio('Trained_With_First_Aid',array('Yes','No'),'','',2);
+											$input->radio('Shifts_Preferred',array('Days','PM','Nights','Live-in'),'','','4');
 										?>
 									</div>
 								</div>
 							</div>
 
 							<div class="form_box">
-								<div class="form_box_col2">
-									<div class="group rdio">
-										<?php
-											// @param label-name, if required
-											$input->label('Certifications / Educational Background:');
-											// @param field name, class, id and attribute
-											$input->radio('Certifications_or_Educational_Background',array('Early Childhood Education Diploma','Early Childhood Education Degree Diploma','Early Childhood Education Assistant','CEGEP','Others'),'Certifications_or_Educational_Background','',5);
-										?>
-										&nbsp;
-										<?php
-											$input->fields('Other_Certifications_or_Educational_Background', 'form_field','Other_Certifications_or_Educational_Background','placeholder="Specify other certifications or background here" disabled');
-										?>
-									</div>
+								<div class="form_box_col1">
 									<div class="group">
 										<?php
 											// @param label-name, if required
-											$input->label('Have you had previous experience in a Child Care or Day Care facility?');
+											$input->label('Previous Experience');
 											// @param field name, class, id and attribute
-											$input->textarea('Previous_Experience_In_A_Child_Care_Or_Day_Care_Facility', 'text form_field','Previous_Experience_In_A_Child_Care_Or_Day_Care_Facility','placeholder="Describe previous work experience in details here" style="height: 235px;"');
+											$input->textarea('Previous_Experience', 'text form_field','Previous_Experience','placeholder="Enter previous experience here"');
 										?>
-										<div style="margin: 15px 0 0 0;">
-										<?php
-											// @param label-name, if required
-											$input->label('How soon can you start?');
-											// @param field name, class, id and attribute
-											$input->fields('How_Soon_Can_You_Start', 'form_field Date','How_Soon_Can_You_Start','placeholder="Enter date here"');
-										?>
-										</div>
 									</div>
 								</div>
 							</div>
-
 							<div class="form_box">
 									<div class="form_box_col1">
 										<div class="group">
@@ -564,8 +557,24 @@ $country = array('Please select country.','Afghanistan','Albania','Algeria','And
 											</label>
 										</div>
 									</div>
+								</div>	
+							<div id="error-message" class="valid_Extension_Message"><i class="fas fa-info-circle"></i><span>Upload Error!</span> <span class="suberror"> </span>  </div>
+							
+							<div class="form_box">
+								<div class="form_box_col1">
+									<div class="group">
+										<?php
+											// @param label-name, if required
+											$input->label('How did you hear about us?');
+											// @param field name, class, id and attribute
+											$input->fields('Heard_about_us_through', 'form_field','Heard_about_us_through','placeholder="Enter how did you hear about us here"');
+										?>
+									</div>
+
 								</div>
-								<div id="error-message" class="valid_Extension_Message"><i class="fas fa-info-circle"></i><span>Upload Error!</span> <span class="suberror"> </span>  </div>
+							</div>
+
+								
 
 							<div class = "form_box5 secode_box">
 								<div class = "group">
@@ -580,20 +589,16 @@ $country = array('Please select country.','Afghanistan','Albania','Algeria','And
 				</div>
 			</div>
 		</div>
-	</div>
-	<?php $input->phone(true); ?>
-	<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+	</div><?php $input->phone(true); ?>
+	<script src = "js/jquery-1.9.0.min.js"></script>
 	<script type="text/javascript" src="js/city_state.min.js"></script>
 	<script type="text/javascript" src="js/addressFunctionality.min.js"></script>
 	<script type="text/javascript" src="js/jquery.validate.min.js"></script>
-	<script type="text/javascript" src="js/jquery.datepick.min.js"></script>
-	<script src="js/datepicker.js"></script>
 	<script src = "js/plugins.js"></script>
 	<script src = "js/jquery.mask.min.js"></script>
-	<script src = "js/proweaverPhone.js"></script>
-	
+	<script src = "js/proweaverPhone.js"></script> 
 	<script>
-	window.onload = function() {
+		window.onload = function() {
 		// ---------------
 		// basic usage
 		// ---------------
@@ -613,32 +618,32 @@ $country = array('Please select country.','Afghanistan','Albania','Algeria','And
 	</script>
 	<script type="text/javascript">
 $(document).ready(function() {
+
 	// validate signup form on keyup and submit
 	$("#submitform").validate({
 		rules: {
-			Full_Name: "required",
+			Name: "required",
 			Address: "required",
 			City: "required",
 			_Zip_Code: "required",
+			Phone_Number: "required",
 			Email_Address: {
 				required: true,
 				email: true
 			},
-			Phone_Number: "required",
 			"attachment[]": "required"
-
 		},
 		messages: {
-			Full_Name: "",
+			Name: "",
 			Address: "",
 			City: "",
 			_Zip_Code: "",
-			Email_Address: "",
 			Phone_Number: "",
+			Email_Address: "",
 			"attachment[]": ""
 		}
 	});
-
+	
 	$("#submitform").submit(function(){
 		if($(this).valid()){
 			$('.load_holder').css('display','block');
@@ -658,39 +663,17 @@ $(document).ready(function() {
 		if(grecaptcha.getResponse() == "") {
 			var $recaptcha = document.querySelector('#g-recaptcha-response');
 			$recaptcha.setAttribute("required", "required");
-			$('.g-recaptcha').addClass('errors').attr('id','recaptcha');
 		  }
 	});
-	
-	$('.Date').datepicker();
-	$('.Date').attr('autocomplete', 'off');
-	
-	$('input[name="Certifications_or_Educational_Background"]').change(function(){
-			if($(this).val() == "Others"){
-				$('input[name="Other_Certifications_or_Educational_Background"]').removeAttr('disabled','disabled');
-			}
-			else{
-				$('input[name="Other_Certifications_or_Educational_Background"]').attr('disabled','disabled');
-			}
-		});
+	var fileInput = document.querySelector('.input-file');
+	var fileInputText = document.querySelector('.js-fileName');
+	fileInputTextContent = fileInputText.textContent;
 
-		$('select[name="Country"]').change(function(){
-			if($(this).val() == "USA"){
-				$("count").prop('disabled', true);
-			}else{
-				$("count").prop('disabled', false);
-			}
-		});
+	fileInput.addEventListener('change', function(e) {
+		var value = e.target.value.length > 0 ? e.target.value : fileInputTextContent;
 
-		$("select[name='Country']").change(function(){
-			if($(this).val() == "USA"){
-				$("#Explanation4").fadeIn();
-				$("#Explanation4").find(':input').attr('disabled', false);
-			}else{
-				$("#Explanation4").fadeOut();
-				$("#Explanation4").find(':input').attr('disabled', 'disabled');
-			}
-		});
+		fileInputText.textContent = value.replace('C:\\fakepath\\', '');
+	});
 
 });
 $(function() {
