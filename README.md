@@ -1,7 +1,5 @@
 # Website Form Templates
 
-![Uploading website-forms.png…]()
-
 30+ templated online forms now being used on numerous WordPress websites across the United States and the Philippines. 
 
 ## Demo
